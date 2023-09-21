@@ -18,10 +18,43 @@ public partial class Player : CharacterBody3D
 	// Get the gravity from the project settings to be synced with RigidBody nodes.
 	public float gravity = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 
+	public override void _Ready()
+	{
+		base._Ready();
+		Input.MouseMode = Input.MouseModeEnum.Captured;
+		head = GetNode("Head") as Node3D;
+	}
+
+	public override void _Input(InputEvent @event)
+	{
+		base._Input(@event);
+		
+		if (@event is InputEventMouseMotion motion)
+		{
+			RotateY(Mathf.DegToRad(- motion.Relative.X) * mouseSensitivity);
+			head.RotateX(Mathf.DegToRad(-motion.Relative.Y) * mouseSensitivity);
+			
+			// limit mouse rotation (prevent full circle rotation) 
+			var rotation = head.Rotation;
+			rotation.X = Mathf.Clamp(head.Rotation.X, Mathf.DegToRad(-89), Mathf.DegToRad(89));
+			head.Rotation = rotation;
+		}
+	}
+
 	public override void _PhysicsProcess(double delta)
 	{
 		Vector3 velocity = Velocity;
 
+		if (Input.IsActionPressed("spint"))
+		{
+			currentSpeed = sprintingSpeed;
+		}
+		else
+		{
+			currentSpeed = walkingSpeed;
+		}
+			
+		
 		// Add the gravity.
 		if (!IsOnFloor())
 			velocity.Y -= gravity * (float)delta;
@@ -30,10 +63,13 @@ public partial class Player : CharacterBody3D
 		if (Input.IsActionJustPressed("ui_accept") && IsOnFloor())
 			velocity.Y = jumpVelocity;
 
-		// Get the input direction and handle the movement/deceleration.
-		// As good practice, you should replace UI actions with custom gameplay actions.
-		Vector2 inputDir = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
-		Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
+		// get direction vector
+		Vector2 inputDir = Input.GetVector("left", "right", "forward", "backward");
+		
+		// calculate
+		var newDirection = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
+		direction = direction.Lerp(newDirection, Convert.ToSingle(delta * lerpSpeed));
+		
 		if (direction != Vector3.Zero)
 		{
 			velocity.X = direction.X * currentSpeed;
