@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://dvcmee6e5jexl"]
+[gd_scene load_steps=8 format=3 uid="uid://dvcmee6e5jexl"]
 
 [ext_resource type="Texture2D" uid="uid://dswswyd4us07v" path="res://assets/kloofendal_48d_partly_cloudy_puresky_2k.hdr" id="1_7xfnr"]
+[ext_resource type="Script" path="res://world/World.cs" id="1_28chv"]
 [ext_resource type="Script" path="res://world/Player.cs" id="2_cwqjm"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_4rw6w"]
@@ -19,6 +20,7 @@ glow_enabled = true
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_uaq4l"]
 
 [node name="World" type="Node3D"]
+script = ExtResource("1_28chv")
 
 [node name="env" type="Node3D" parent="."]
 
@@ -45,3 +47,6 @@ shape = SubResource("CapsuleShape3D_uaq4l")
 [node name="CSGBox3D" type="CSGBox3D" parent="Stage"]
 transform = Transform3D(15, 0, 0, 0, 1, 0, 0, 0, 15, 0, 0, 0)
 use_collision = true
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 0

@@ -1,5 +1,7 @@
-using Godot;
 using System;
+using Godot;
+
+namespace McGd.world;
 
 public partial class Player : CharacterBody3D
 {
@@ -60,7 +62,7 @@ public partial class Player : CharacterBody3D
 			velocity.Y -= gravity * (float)delta;
 
 		// Handle Jump.
-		if (Input.IsActionJustPressed("ui_accept") && IsOnFloor())
+		if (Input.IsActionJustPressed("jump") && IsOnFloor())
 			velocity.Y = jumpVelocity;
 
 		// get direction vector
